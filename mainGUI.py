@@ -9,16 +9,24 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-
+from pyqtgraph import PlotWidget,plot
+import pyqtgraph as pg
+import sys
+import os
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(800, 600)
+        MainWindow.resize(1101, 577)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.centralwidget)
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.gridLayout = QtWidgets.QGridLayout()
+        self.gridLayout.setObjectName("gridLayout")
+        self.horizontalLayout = QtWidgets.QHBoxLayout()
+        self.horizontalLayout.setObjectName("horizontalLayout")
         self.comboBox_criptos = QtWidgets.QComboBox(self.centralwidget)
-        self.comboBox_criptos.setGeometry(QtCore.QRect(40, 70, 201, 21))
         self.comboBox_criptos.setCurrentText("")
         self.comboBox_criptos.setObjectName("comboBox_criptos")
         self.comboBox_criptos.addItem("Bitcoin")
@@ -26,60 +34,57 @@ class Ui_MainWindow(object):
         self.comboBox_criptos.addItem("Binance Coin")
         self.comboBox_criptos.addItem("Litecoin")
         self.comboBox_criptos.addItem("Bitcoin Cash")
+        self.horizontalLayout.addWidget(self.comboBox_criptos)
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton.setGeometry(QtCore.QRect(490, 70, 93, 28))
         self.pushButton.setObjectName("pushButton")
-        self.verticalLayoutWidget = QtWidgets.QWidget(self.centralwidget)
-        self.verticalLayoutWidget.setGeometry(QtCore.QRect(630, 120, 151, 188))
-        self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
-        self.verticalLayout = QtWidgets.QVBoxLayout(self.verticalLayoutWidget)
+        self.horizontalLayout.addWidget(self.pushButton)
+        self.gridLayout.addLayout(self.horizontalLayout, 1, 1, 1, 1)
+        self.verticalLayout = QtWidgets.QVBoxLayout()
         self.verticalLayout.setContentsMargins(10, 10, 10, 10)
         self.verticalLayout.setSpacing(4)
         self.verticalLayout.setObjectName("verticalLayout")
-        self.btc_button = QtWidgets.QPushButton(self.verticalLayoutWidget)
+        self.btc_button = QtWidgets.QPushButton(self.centralwidget)
         self.btc_button.setObjectName("btc_button")
         self.verticalLayout.addWidget(self.btc_button)
-        self.eth_button = QtWidgets.QPushButton(self.verticalLayoutWidget)
+        self.eth_button = QtWidgets.QPushButton(self.centralwidget)
         self.eth_button.setObjectName("eth_button")
         self.verticalLayout.addWidget(self.eth_button)
-        self.bnb_button = QtWidgets.QPushButton(self.verticalLayoutWidget)
+        self.bnb_button = QtWidgets.QPushButton(self.centralwidget)
         self.bnb_button.setObjectName("bnb_button")
         self.verticalLayout.addWidget(self.bnb_button)
-        self.ltc_button = QtWidgets.QPushButton(self.verticalLayoutWidget)
+        self.ltc_button = QtWidgets.QPushButton(self.centralwidget)
         self.ltc_button.setObjectName("ltc_button")
         self.verticalLayout.addWidget(self.ltc_button)
-        self.bch_button = QtWidgets.QPushButton(self.verticalLayoutWidget)
+        self.bch_button = QtWidgets.QPushButton(self.centralwidget)
         self.bch_button.setObjectName("bch_button")
         self.verticalLayout.addWidget(self.bch_button)
-        self.label = QtWidgets.QLabel(self.centralwidget)
-        self.label.setGeometry(QtCore.QRect(40, 140, 561, 341))
-        self.label.setText("")
-        self.label.setPixmap(QtGui.QPixmap("BitcoinPrice.png"))
-        self.label.setScaledContents(True)
-        self.label.setObjectName("label")
+        self.gridLayout.addLayout(self.verticalLayout, 2, 2, 1, 1)
         self.title = QtWidgets.QLabel(self.centralwidget)
-        self.title.setGeometry(QtCore.QRect(290, 10, 241, 31))
         font = QtGui.QFont()
         font.setFamily("MS Sans Serif")
         font.setPointSize(14)
         self.title.setFont(font)
         self.title.setAutoFillBackground(False)
+        self.title.setAlignment(QtCore.Qt.AlignCenter)
         self.title.setObjectName("title")
+        self.gridLayout.addWidget(self.title, 0, 0, 1, 3)
+        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.gridLayout.addItem(spacerItem, 2, 0, 1, 1)
+        spacerItem1 = QtWidgets.QSpacerItem(728, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.gridLayout.addItem(spacerItem1, 3, 1, 1, 1)
+        self.widget = PlotWidget(self.centralwidget)
+        self.widget.setStyleSheet("background-color: rgb(97, 97, 97);")
+        self.widget.setObjectName("widget")
+        self.gridLayout.addWidget(self.widget, 2, 1, 1, 1)
+        self.horizontalLayout_2.addLayout(self.gridLayout)
         MainWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 26))
-        self.menubar.setObjectName("menubar")
-        MainWindow.setMenuBar(self.menubar)
-        self.statusbar = QtWidgets.QStatusBar(MainWindow)
-        self.statusbar.setObjectName("statusbar")
-        MainWindow.setStatusBar(self.statusbar)
-
-        save_btn = QtWidgets.QPushButton("Save", MainWindow)
-        save_btn.move(500,500)
 
         self.retranslateUi(MainWindow)
-
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        self.plot([1,2,3,4,5,6,7,8,9,10],[30,32,34,35,36,37,38,32,39,30])
+
+    def plot(self, hour, temperature):
+        self.widget.plot(hour, temperature)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -91,6 +96,7 @@ class Ui_MainWindow(object):
         self.ltc_button.setText(_translate("MainWindow", "Litecoin"))
         self.bch_button.setText(_translate("MainWindow", "Bitcoin Cash"))
         self.title.setText(_translate("MainWindow", "NeoCriptoNetwork"))
+
 
 
 if __name__ == "__main__":
