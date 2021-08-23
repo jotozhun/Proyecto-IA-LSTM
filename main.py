@@ -1,21 +1,21 @@
-#Librerias  pykalman para preprocesar, mlflow
+#Librerias  pykalman para preprocesar
+# mlflow, recolectar los datos de cada prueba, y nos crea un dataframe de esos datos.
+# El modelo lo haremos con tensorflow
+# python-binance para obtener los datos historicos de los precios de criptomonedas
+
+import pandas as pd
 
 import numpy as np
-import pandas as pd
+
 import matplotlib.pyplot as plt
-import datetime
 from sklearn.metrics import mean_absolute_error
 
 from typing import Tuple, Dict
 
-import tensorflow as tf
 from tensorflow.keras.layers import *
 from tensorflow.keras.models import *
-from tensorflow.keras.callbacks import *
 from tensorflow.keras.optimizers import *
 from tensorflow.keras import backend as K
-
-import os
 
 from mlflow import log_metric, log_param, log_artifacts
 
@@ -24,28 +24,30 @@ warnings.filterwarnings("ignore")
 
 from pykalman import KalmanFilter
 
-CRIPTO = 'ADAEUR'
-VELAS = '15m'
+
+
+monedas = ["LTCUSDT", "BCHUSDT", "ETHUSDT", "BTCUSDT", "BNBUSDT"]
+
+
+#Datos que queremos guardar en mlflow
+
+CRIPTO = 'BNBUSDT'
+VELAS = '15m' #Periodo de las velas (15 minutos)
 log_param("moneda", CRIPTO)
 log_param("velas", VELAS)
 
 SEQUENCE_LENGHT = 100
 
+# Parametros del modelo
 param = {
     'unit': 50,
     't2v_dim': 50,
-    'lr': 1e-2,
+    'lr': 1e-3,
     'act': 'relu',
     'epochs': 10,
     'batch_size': 100
 }
 
-df = pd.read_csv('ADAEUR_15m_1 Jan, 2019_to_29 Mar, 2021.csv')
-
-#df.shape
-#df.head()
-
-df['close'].plot( figsize=(8,6))
 
 def KalmanTransform(df: pd.DataFrame,variable: str = 'close') -> None:
     kf = KalmanFilter(transition_matrices = [1],
@@ -57,7 +59,12 @@ def KalmanTransform(df: pd.DataFrame,variable: str = 'close') -> None:
     state_means, _ = kf.filter(df[variable].values)
     df['kalman'] = pd.Series(state_means.flatten(), index=df.index)
 
+df = pd.read_csv('BNBUSDT.csv', encoding='utf-8')
+
+df["close"] = pd.to_numeric(df["close"], downcast="float")
 df_tmp=df.copy()
+
+
 
 kf = KalmanFilter(transition_matrices = [1],
               observation_matrices = [1],
@@ -68,7 +75,8 @@ kf = KalmanFilter(transition_matrices = [1],
 state_means, _ = kf.filter(df_tmp['close'].values)
 df_tmp['kalman'] = pd.Series(state_means.flatten(), index=df.index)
 
-#df_tmp[['close','kalman']][100:1000].plot(figsize=(12,8))
+df_tmp[['close','kalman']][100:1000].plot(figsize=(12,8))
+df_tmp[['close', 'kalman']].plot()
 
 def gen_sequence(id_df: pd.DataFrame, seq_length: int, seq_cols: str):
     data_matrix = id_df[seq_cols].values
@@ -190,8 +198,7 @@ plt.figure(figsize=(12,6))
 plt.plot(pred[:100], label='T2V')
 plt.plot(y_test[:100].ravel(), label='true')
 plt.title('T2V predict'); plt.legend()
-
+plt.show()
 
 #print(mean_absolute_error(y_test.ravel(), pred))
 log_metric("MAE",mean_absolute_error(y_test.ravel(), pred))
-

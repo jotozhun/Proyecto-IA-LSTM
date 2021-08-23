@@ -2,7 +2,7 @@ artifact_uri: file:///D:/Universidad/Inteligencia%20Artificial/Proyecto/mlruns/0
 end_time: 1627684116435
 entry_point_name: ''
 experiment_id: '0'
-lifecycle_stage: active
+lifecycle_stage: deleted
 name: ''
 run_id: eca9efedfcfc4f25a35f78f8f5b2ad22
 run_uuid: eca9efedfcfc4f25a35f78f8f5b2ad22
